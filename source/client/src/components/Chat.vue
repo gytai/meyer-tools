@@ -17,8 +17,8 @@
       <div class="chat__main__footer">
         <div class="chat__main__footer__controls">
           <div class="chat__main__footer__controls__btn-msg" title="表情"></div>
-          <div class="chat__main__footer__controls__btn-msg" title="表情"></div>
-          <div class="chat__main__footer__controls__btn-msg" title="表情"></div>
+          <div class="chat__main__footer__controls__btn-file" title="文件传输"></div>
+          <div class="chat__main__footer__controls__btn-like" title="点赞"></div>
         </div>
         <div class="chat__main__footer__input">
           <Input class="chat__main__footer__input__textarea" type="textarea" :autosize="{minRows: 6,maxRows:10000}" placeholder="Enter something..."></Input>
@@ -141,6 +141,20 @@ export default class Chat extends Vue {
             width: 16px;
             height: 16px;
             background:url('../static/images/icon_im_face.png');
+          }
+
+          &__btn-file{
+            margin-left: 20px;
+            width: 16px;
+            height: 16px;
+            background:url('../static/images/icon_workfile_line.png');
+          }
+
+          &__btn-like{
+            margin-left: 20px;
+            width: 16px;
+            height: 16px;
+            background:url('../static/images/icon_likegood.png');
           }
         }
 

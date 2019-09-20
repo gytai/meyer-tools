@@ -3,9 +3,10 @@
     <Layout>
       <Sider hide-trigger>
         <div class="slide-menu">
-          <div class="btn-msg" title="聊天"></div>
-          <div class="btn-todo" title="任务"></div>
-          <div class="btn-user" title="通讯录"></div>
+          <div class="btn-msg" v-bind:class="{ 'btn-msg-active': isMsgActive }" title="聊天" @click="toChat"></div>
+          <div class="btn-todo" v-bind:class="{ 'btn-todo-active': isTodoActive }" title="任务"></div>
+          <div class="btn-user" v-bind:class="{ 'btn-user-active': isUserActive }" title="通讯录"></div>
+          <div class="btn-file" v-bind:class="{ 'btn-file-active': isFileActive }" title="文件盘" @click="toFileCloud"></div>
         </div>
       </Sider>
       <Layout>
@@ -14,12 +15,41 @@
             <Avatar icon="ios-person"/>
           </div>
         </Header>
-        <Content> <router-view/></Content>
+        <Content > <router-view/></Content>
         <!--<Footer>Footer</Footer>-->
       </Layout>
     </Layout>
   </div>
 </template>
+
+<script lang="ts">
+  import {Component, Vue } from 'vue-property-decorator';
+
+  @Component
+  export default class App extends Vue {
+
+    private isMsgActive = true;
+    private isTodoActive = false;
+    private isUserActive = false;
+    private isFileActive = false;
+
+    toChat(){
+      this.isMsgActive = true;
+      this.isTodoActive = false;
+      this.isUserActive = false;
+      this.isFileActive = false;
+      this.$router.push({ path: '/' })
+    }
+
+    toFileCloud(){
+      this.isMsgActive = false;
+      this.isTodoActive = false;
+      this.isUserActive = false;
+      this.isFileActive = true;
+      this.$router.push({ path: '/fileCloud' })
+    }
+  }
+</script>
 
 <style lang="less">
 html,body,#app {
@@ -30,6 +60,10 @@ html,body,#app {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+#app{
+  min-width: 360px;
 }
 
 .ivu-layout{
@@ -73,6 +107,10 @@ html,body,#app {
 .slide-menu > .btn-msg{
   width: 32px;
   height: 32px;
+  background:url('./static/images/icon_message.png');
+}
+
+.slide-menu > .btn-msg-active {
   background:url('./static/images/icon_message-focus.png');
 }
 
@@ -87,6 +125,10 @@ html,body,#app {
   background:url('./static/images/icon_dingtab.png');
 }
 
+.slide-menu > .btn-todo-active {
+  background:url('./static/images/icon_dingtab-focus.png');
+}
+
 .slide-menu > .btn-todo:hover{
   background:url('./static/images/icon_dingtab-focus.png');
 }
@@ -98,7 +140,27 @@ html,body,#app {
   background:url('./static/images/icon_addresslist.png');
 }
 
+.slide-menu > .btn-user-active{
+  background:url('./static/images/icon_addresslist-focus.png');
+}
+
+
 .slide-menu > .btn-user:hover{
   background:url('./static/images/icon_addresslist-focus.png');
+}
+
+.slide-menu > .btn-file{
+  margin-top: 30px;
+  width: 32px;
+  height: 32px;
+  background:url('./static/images/icon_file_fill.png');
+}
+
+.slide-menu > .btn-file-active{
+  background:url('./static/images/icon_file_fill-focus.png');
+}
+
+.slide-menu > .btn-file:hover{
+  background:url('./static/images/icon_file_fill-focus.png');
 }
 </style>

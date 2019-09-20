@@ -32,7 +32,7 @@ import FilePanel from '@/components/FilePanel.vue'
 
 export default class Home extends Vue {
   private breadcrumbItems = ['全部文件'];
-  private fileList = [{title:"测试1",img:require('../static/images/fileCloud/folder.png')},{title:"测试2",img:require('../static/images/fileCloud/folder.png')}]
+  private fileList = [{title:"测试1",img:require('../static/images/fileCloud/folder.png')}]
 }
 </script>
 <style scoped lang="less">
@@ -67,7 +67,7 @@ export default class Home extends Vue {
 
     &-container{
       padding: 15px;
-      height: 100%;
+      height: calc(100% - 50px);
       display: flex;
       flex-direction: row;
       justify-content: flex-start;

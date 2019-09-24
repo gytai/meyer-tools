@@ -24,9 +24,11 @@ service.interceptors.request.use(config => {
         duration: 0
     });
 
+    setTimeout(loading,5000);
+
     config.method === 'post'
         ? config.data = qs.stringify({...config.data})
-        : config.params = {...config.params};
+        : config.params = {...config.data};
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     config.headers['x-access-token'] = Cookies.get('x-access-token');
     return config;
@@ -42,7 +44,11 @@ service.interceptors.response.use(
         //这里根据后端提供的数据进行对应的处理
         if (response.data.code === 200) {
             return response.data.data;
-        } else {
+        }
+        else if(response.data.code === 505){
+            Cookies.remove('x-access-token');
+            location.reload();
+        }else {
             Message.error(response.data.msg)
             return Promise.reject(response.data)
         }

@@ -6,6 +6,7 @@
 const Sequelize = require("sequelize");
 const sequelizeInstance = require("../utils/sequelize").sequelizeInstance;
 const path = require('path');
+const gm = require('gm');
 
 const Model = sequelizeInstance.define(
     "my_file",
@@ -29,8 +30,12 @@ const Model = sequelizeInstance.define(
             comment: "文件类型图片"
         },
         path: {
-            type: Sequelize.STRING(100),
-            comment: "文件路径"
+            type: Sequelize.STRING,
+            comment: "文件预览路径"
+        },
+        storage_path: {
+            type: Sequelize.STRING,
+            comment: "文件存储路径"
         },
         type: {
             type: Sequelize.INTEGER(2),
@@ -76,7 +81,7 @@ Model.sync()
  * @param type
  * @param is_public
  */
-async function creatFile(pid,name,type,is_public) {
+async function creatFile(pid,name,type,is_public,preview_path,storage_path) {
     let info = await Model.findOne({
         where:{
             pid: pid,
@@ -88,19 +93,6 @@ async function creatFile(pid,name,type,is_public) {
         return -1;
     }
 
-    // 查找父文件的路径
-    let pInfo = await Model.findOne({
-        where:{
-            id: pid
-        }
-    });
-
-    let topPath = '/';
-    if(pInfo){
-        topPath = pInfo.path;
-    }
-
-    let filePath = path.join(topPath,name);
     let img = 'https://cdn.chinameyer.com/images/filetype/folder.png';
 
     if(type == 2){
@@ -133,6 +125,22 @@ async function creatFile(pid,name,type,is_public) {
         }else{
             img = 'https://cdn.chinameyer.com/images/filetype/mix.png';
         }
+
+        if(ext === '.jpg' || ext === '.png' || ext === '.jpeg' || ext === '.bmp' || ext === '.gif'){
+            let dir = path.dirname(storage_path);
+            let preDir = path.dirname(preview_path);
+            let name = path.basename(storage_path);
+            gm(storage_path)
+                .resize(56,56)     //设置压缩后的w/h
+                .setFormat('jpg')
+                .quality(70)       //设置压缩质量: 0-100
+                .strip()
+                .autoOrient()
+                .write(path.join(dir,'preview-' + name) , function(err){
+                    console.log("err: " + err);
+                });
+            img = path.join(preDir,name);
+        }
     }
 
 
@@ -140,7 +148,8 @@ async function creatFile(pid,name,type,is_public) {
         pid: pid,
         name: name,
         img: img,
-        path: filePath,
+        path: preview_path,
+        storage_path:storage_path,
         type: type,
         is_public: is_public
     });

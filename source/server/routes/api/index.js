@@ -35,7 +35,10 @@ router.post('/upload', upload.single('file'), function(req, res) {
             console.error(err);
             return res.send({ code: 500, msg: "系统错误"});
         }
-        return res.send({ code: 200, msg: "success",data:path.join('/uploads/',tmpPath,fileName)});
+        return res.send({ code: 200, msg: "success",data:{
+            previewPath:path.join('/uploads/',tmpPath,fileName),
+            storagePath:filePath
+        }});
     })
 });
 

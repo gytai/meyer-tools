@@ -2,8 +2,9 @@
     <div class="file-cloud">
         <div class="file-cloud-header">
             <Breadcrumb separator=">" class="file-cloud-header-breadcrumb">
-                <BreadcrumbItem v-for="item,index in breadcrumbItems" v-bind:key="index">
-                    {{ item }}
+                <BreadcrumbItem v-for="item,index in breadcrumbItems" v-bind:key="index" :pid="item.id"
+                                v-on:click.native="handleBreadcrumbClick(index,item.id)">
+                    {{ item.name }}
                 </BreadcrumbItem>
             </Breadcrumb>
 
@@ -13,7 +14,8 @@
         </div>
 
         <div class="file-cloud-container">
-            <FilePanel v-for="item,index in fileList" v-bind:key="index" :name="item.name" :img="item.img"/>
+            <FilePanel v-for="item,index in fileList" v-bind:key="index" :name="item.name"
+                       :img="item.img" v-on:dblclick.native="handleFileClick(item.type,item.id,item.name)"/>
         </div>
 
         <Drawer
@@ -21,8 +23,7 @@
                 v-model="drawerShow"
                 width="300"
                 :mask-closable="false"
-                :styles="styles"
-        >
+                :styles="styles">
             <Form :model="formData" label-position="left" :label-width=80>
                 <FormItem label="类型">
                     <RadioGroup v-model="formData.type">
@@ -43,6 +44,8 @@
                 <Upload
                         v-show="formData.type == 2"
                         type="drag"
+                        :headers="uploadHeaders"
+                        :on-success="handleSuccess"
                         action="/api/upload">
                     <div style="padding: 20px 0">
                         <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
@@ -62,6 +65,7 @@
     import {Component, Vue} from 'vue-property-decorator';
     import FilePanel from '@/components/FilePanel.vue'
     import {apiListFile, apiCreatFile} from '@/api/file';
+    import Cookies from 'js-cookie'
 
     @Component({
         components: {
@@ -70,7 +74,7 @@
     })
 
     export default class Home extends Vue {
-        private breadcrumbItems = ['全部文件'];
+        private breadcrumbItems = [{name:'全部文件',id:0}];
         private currentFileId = 0;
         private drawerShow = false;
         private fileList = [{name: "测试1", img: require('../static/images/fileCloud/folder.png')}];
@@ -84,7 +88,13 @@
             name: '',
             type: "1",
             pid: '',
-            is_public: '0'
+            is_public: '0',
+            preview_path: '',
+            storage_path: ''
+        };
+
+        private uploadHeaders = {
+          'x-access-token': Cookies.get('x-access-token')
         };
 
         listFile(pid: Number) {
@@ -102,11 +112,50 @@
                 name: this.formData.name,
                 type: this.formData.type,
                 is_public: this.formData.is_public,
+                preview_path: this.formData.preview_path,
+                storage_path: this.formData.storage_path
             };
             apiCreatFile(params).then( () => {
                 this.listFile(this.currentFileId);
+                this.drawerShow = false;
                 this.$Message.success('添加成功')
+            }).catch( err => {
+                console.log(err);
             })
+        }
+
+        handleSuccess (res, file) {
+            if(res.code == 200){
+                this.formData.preview_path = res.data.previewPath;
+                this.formData.storage_path = res.data.storagePath;
+                if(!this.formData.name){
+                    this.formData.name = file.name;
+                }else{
+                    let extIndex = file.name.lastIndexOf('.');
+                    let ext = file.name.substr(extIndex);
+                    this.formData.name = this.formData.name + ext;
+                }
+            }else{
+                this.$Message.error('文件上传失败');
+            }
+        }
+
+        handleFileClick(type,id,name){
+            if(type == 1){
+                this.currentFileId = id;
+                this.listFile(this.currentFileId);
+
+                this.breadcrumbItems.push({
+                    name: name,
+                    id: id
+                });
+            }
+        }
+
+        handleBreadcrumbClick(index,id){
+            this.breadcrumbItems = this.breadcrumbItems.slice(0,index+1);
+            this.currentFileId = id;
+            this.listFile(this.currentFileId);
         }
 
         mounted() {
@@ -130,6 +179,10 @@
             align-items: center;
             padding-left: 20px;
             padding-right: 20px;
+
+            &-breadcrumb{
+                cursor: pointer;
+            }
 
             &-opration {
                 display: flex;

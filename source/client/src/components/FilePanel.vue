@@ -1,7 +1,7 @@
 <template>
   <div class="file">
-      <img :src="img" class="file-img">
-      <div>{{ name}}</div>
+      <img :src="img" class="file-img" :title="name">
+      <div class="file-title">{{ name}}</div>
   </div>
 </template>
 
@@ -28,6 +28,13 @@ export default class FilePanel extends Vue {
           width: 60px;
           height: 60px;
           margin-bottom: 10px;
+      }
+
+      &-title{
+          max-width: 90px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
       }
   }
 </style>

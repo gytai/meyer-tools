@@ -4,14 +4,15 @@
  *Description:数据库操作基础类
  */
 const Sequelize = require('sequelize');
-const DB = require('./config').DB;
+const DB = require('../config').DB;
 
 const sequelizeInstance = new Sequelize(DB.database, DB.username, DB.password, {
     host: DB.host,
+    port: DB.port,
     dialect: DB.dialect,
     //连接池设置
     pool: {
-        max: 2,
+        max: 100,
         min: 0,
         acquire: 30000,
         idle: 10000

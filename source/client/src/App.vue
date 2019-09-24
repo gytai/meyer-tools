@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Layout>
-      <Sider hide-trigger>
+      <Sider hide-trigger v-show="isShow">
         <div class="slide-menu">
           <div class="btn-msg" v-bind:class="{ 'btn-msg-active': isMsgActive }" title="聊天" @click="toChat"></div>
           <div class="btn-todo" v-bind:class="{ 'btn-todo-active': isTodoActive }" title="任务"></div>
@@ -10,7 +10,7 @@
         </div>
       </Sider>
       <Layout>
-        <Header>
+        <Header v-show="isShow">
           <div class="header-user">
             <Avatar icon="ios-person"/>
           </div>
@@ -24,6 +24,7 @@
 
 <script lang="ts">
   import {Component, Vue } from 'vue-property-decorator';
+  import Cookies from 'js-cookie'
 
   @Component
   export default class App extends Vue {
@@ -32,6 +33,7 @@
     private isTodoActive = false;
     private isUserActive = false;
     private isFileActive = false;
+    private isShow = Cookies.get('x-access-token')?true:false;
 
     toChat(){
       this.isMsgActive = true;
@@ -47,6 +49,11 @@
       this.isUserActive = false;
       this.isFileActive = true;
       this.$router.push({ path: '/fileCloud' })
+    }
+
+    updated(){
+      console.log('App updated');
+      this.isShow = Cookies.get('x-access-token')?true:false;
     }
   }
 </script>
@@ -162,5 +169,13 @@ html,body,#app {
 
 .slide-menu > .btn-file:hover{
   background:url('./static/images/icon_file_fill-focus.png');
+}
+
+.ivu-form-item-content{
+  text-align: left !important;
+}
+
+.ivu-drawer-header-inner{
+  text-align: left !important;
 }
 </style>

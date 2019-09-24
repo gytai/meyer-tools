@@ -17,8 +17,8 @@ var fs = require('fs');
  * Get port from environment and store in Express.
  */
 
-var httpsPort = 3001;
-var httpPort = 3000;
+var httpsPort = 3009;
+var httpPort = 3008;
 
 var root = path.join(__dirname,'../cert/');
 var privateKey  = fs.readFileSync(root + 'server.key', 'utf8');

@@ -1,7 +1,7 @@
 <template>
   <div class="file">
       <img :src="img" class="file-img">
-      <div>{{ title}}</div>
+      <div>{{ name}}</div>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class FilePanel extends Vue {
   @Prop() private img!: string ;
-  @Prop() private title !: string ;
+  @Prop() private name !: string ;
 }
 </script>
 

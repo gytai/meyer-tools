@@ -21,7 +21,7 @@
           <div class="chat__main__footer__controls__btn-like" title="点赞"></div>
         </div>
         <div class="chat__main__footer__input">
-          <Input class="chat__main__footer__input__textarea" type="textarea" :autosize="{minRows: 6,maxRows:10000}" placeholder="Enter something..."></Input>
+          <Input class="chat__main__footer__input__textarea" type="textarea" :autosize="{minRows: 6,maxRows:10000}" placeholder="Enter something..."/>
         </div>
       </div>
     </div>

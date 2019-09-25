@@ -15,7 +15,10 @@
 
         <div class="file-cloud-container">
             <FilePanel v-for="item,index in fileList" v-bind:key="index" :name="item.name"
-                       :img="item.img" v-on:dblclick.native="handleFileClick(item.type,item.id,item.name)"/>
+                       :img="item.img"
+                       v-on:dblclick.native="handleFileDblClick(item.type,item.id,item.name)"
+                       v-on:click.native="handleFileClick(item.id,item.name,item.is_public,item.is_share,item.preview_path)"
+            />
         </div>
 
         <Drawer
@@ -24,7 +27,7 @@
                 width="300"
                 :mask-closable="false"
                 :styles="styles">
-            <Form :model="formData" label-position="left" :label-width=80>
+            <Form :model="formData" label-position="left" :label-width=60>
                 <FormItem label="类型">
                     <RadioGroup v-model="formData.type">
                         <Radio label="1">文件夹   </Radio>
@@ -58,13 +61,54 @@
                 <Button type="primary" @click="createFile">提交</Button>
             </div>
         </Drawer>
+        <Drawer
+                title="文件属性"
+                v-model="drawerInfoShow"
+                width="300"
+                :mask-closable="false"
+                :styles="styles">
+            <Form :model="formData" label-position="left" :label-width=60>
+                <FormItem label="私有">
+                    <RadioGroup v-model="fileInfoData.is_public">
+                        <Radio label="0">是</Radio>
+                        <Radio label="1">否</Radio>
+                    </RadioGroup>
+                </FormItem>
+                <FormItem label="名称">
+                    <Input v-model="fileInfoData.name" placeholder="请输入文件夹或者文件名称"></Input>
+                </FormItem>
+                <FormItem label="分享">
+                    <i-switch v-model="fileInfoData.is_share" size="large">
+                        <span slot="1">开启</span>
+                        <span slot="0">关闭</span>
+                    </i-switch>
+                </FormItem>
+                <FormItem label="分享链接" v-show="fileInfoData.is_share">
+                    {{ host + fileInfoData.preview_path }}
+                </FormItem>
+            </Form>
+            <div class="file-cloud-drawer-footer">
+                <Button style="margin-right: 8px" @click="drawerInfoShow = false">取消</Button>
+                <Button style="margin-right: 8px" type="primary"
+                        @click="updateFile(fileInfoData.id,fileInfoData.is_public,
+                        fileInfoData.name,fileInfoData.is_share)">更新</Button>
+                <Button type="error" @click="modalDelete = true;deleteFileId = fileInfoData.id">删除</Button>
+            </div>
+        </Drawer>
+        <Modal
+                v-model="modalDelete"
+                title="确认删除"
+                @on-ok="deleteFile(deleteFileId)"
+                @on-cancel="cancel">
+            <p>您是否确认删除这个文件?</p>
+        </Modal>
     </div>
 </template>
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import FilePanel from '@/components/FilePanel.vue'
-    import {apiListFile, apiCreatFile} from '@/api/file';
+    import {apiListFile, apiCreatFile, apiUpdateFile, apiDeleteFile} from '@/api/file';
     import Cookies from 'js-cookie'
 
     @Component({
@@ -77,6 +121,14 @@
         private breadcrumbItems = [{name:'全部文件',id:0}];
         private currentFileId = 0;
         private drawerShow = false;
+        private drawerInfoShow = false;
+        private modalDelete = false;
+        private deleteFileId = -1;
+        private host = 'http://localhost';
+        private uploadHeaders = {
+            'x-access-token': Cookies.get('x-access-token')
+        };
+
         private fileList = [{name: "测试1", img: require('../static/images/fileCloud/folder.png')}];
         private styles = {
             height: 'calc(100% - 55px)',
@@ -90,12 +142,20 @@
             pid: '',
             is_public: '0',
             preview_path: '',
-            storage_path: ''
+            storage_path: '',
+            is_share: false
         };
 
-        private uploadHeaders = {
-          'x-access-token': Cookies.get('x-access-token')
+        private fileInfoData = {
+            id: 0,
+            pid: 0,
+            name: '',
+            is_public: '0',
+            preview_path:'',
+            is_share: false
         };
+
+
 
         listFile(pid: Number) {
             const params = {
@@ -116,9 +176,42 @@
                 storage_path: this.formData.storage_path
             };
             apiCreatFile(params).then( () => {
+                this.formData.name = '';
+                this.formData.type = "1";
+                this.formData.is_public = "0";
+                this.formData.preview_path = '';
+                this.formData.storage_path = '';
+
                 this.listFile(this.currentFileId);
                 this.drawerShow = false;
                 this.$Message.success('添加成功')
+            }).catch( err => {
+                console.log(err);
+            })
+        }
+
+        deleteFile(id){
+            apiDeleteFile({
+                id: id
+            }).then( () => {
+                this.listFile(this.currentFileId);
+                this.drawerInfoShow = false;
+                this.$Message.success('删除成功')
+            }).catch( err => {
+                console.log(err);
+            })
+        }
+
+        updateFile(id,is_public,name,is_share){
+            apiUpdateFile({
+                id: id,
+                is_public: is_public,
+                name: name,
+                is_share: is_share?1:0
+            }).then( () => {
+                this.listFile(this.currentFileId);
+                this.drawerInfoShow = false;
+                this.$Message.success('更新成功')
             }).catch( err => {
                 console.log(err);
             })
@@ -140,7 +233,7 @@
             }
         }
 
-        handleFileClick(type,id,name){
+        handleFileDblClick(type,id,name){
             if(type == 1){
                 this.currentFileId = id;
                 this.listFile(this.currentFileId);
@@ -152,10 +245,25 @@
             }
         }
 
+        handleFileClick(id,name,is_public,is_share,preview_path){
+            this.fileInfoData.id = id;
+            this.fileInfoData.name = name;
+            this.fileInfoData.is_public = is_public + '';
+            this.fileInfoData.is_share = is_share == 1?true:false;
+            this.fileInfoData.preview_path = preview_path;
+            this.drawerInfoShow = true;
+
+            console.log('this.fileInfoData',this.fileInfoData)
+        }
+
         handleBreadcrumbClick(index,id){
             this.breadcrumbItems = this.breadcrumbItems.slice(0,index+1);
             this.currentFileId = id;
             this.listFile(this.currentFileId);
+        }
+
+        cancel(){
+            this.modalDelete = false;
         }
 
         mounted() {
@@ -203,6 +311,8 @@
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
+            flex-wrap: wrap;
+            align-content:flex-start;
         }
 
         &-drawer-footer{

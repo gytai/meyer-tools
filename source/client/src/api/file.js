@@ -21,6 +21,22 @@ function apiListFile(data) {
     })
 }
 
+function apiDeleteFile(data) {
+    return service({
+        url: '/api/file/delete',
+        method: 'post',
+        data
+    })
+}
+
+function apiUpdateFile(data) {
+    return service({
+        url: '/api/file/update',
+        method: 'post',
+        data
+    })
+}
+
 export {
-    apiCreatFile,apiListFile
+    apiCreatFile,apiListFile,apiDeleteFile,apiUpdateFile
 }

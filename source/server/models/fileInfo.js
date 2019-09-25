@@ -54,6 +54,11 @@ const Model = sequelizeInstance.define(
         share_code: {
             type: Sequelize.STRING(10),
             comment: "分享提取码"
+        },
+        is_share: {
+            type: Sequelize.INTEGER,
+            comment: "是否分享",
+            defaultValue: 0
         }
     },
     {
@@ -169,10 +174,86 @@ function listFile(pid,type) {
         condition.type = type
     }
     return Model.findAll({
-        attributes: ['id','pid','name','type','img'],
+        attributes: ['id','pid','name','type','img',['path','preview_path'],'is_share','is_public'],
         where:condition
+    });
+}
+
+/**
+ * 根据ID查找
+ * @param id
+ * @returns {Promise<Model | null> | Promise<Model>}
+ */
+function findById(id){
+    return Model.findOne({
+        attributes: ['id','pid','name','type','img',['path','preview_path'],'is_share','is_public'],
+        id:id
+    })
+}
+
+/**
+ * 删除文件
+ * @param id
+ * @returns {Promise<number>}
+ */
+async function delById(id){
+    let info = await Model.findOne({
+        where:{
+            id: id
+        }
+    });
+
+    if(!info){
+        return -1;
+    }
+
+    return Model.destroy({
+        where:{
+            id: id
+        }
+    })
+}
+
+/**
+ * 更新用户信息
+ * @param id
+ * @param name
+ * @param is_public
+ * @returns {Promise<void>}
+ */
+async function updateFile(id,name,is_public,is_share){
+    let info = await Model.findOne({
+        where:{
+            id: id
+        }
+    });
+
+    if(!info){
+        return -1;
+    }
+
+    let content = {};
+    if(name){
+        content.name = name;
+    }
+
+    if(is_public){
+        content.is_public = is_public;
+    }
+
+    if(is_share){
+        content.is_share = is_share;
+    }
+
+    return Model.update(content,{
+        where:{
+            id: id
+        }
     });
 }
 
 exports.creatFile = creatFile;
 exports.listFile = listFile;
+exports.findById = findById;
+exports.delById = delById;
+exports.updateFile = updateFile;

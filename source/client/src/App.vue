@@ -178,4 +178,7 @@ html,body,#app {
 .ivu-drawer-header-inner{
   text-align: left !important;
 }
+.ivu-modal-header-inner,.ivu-modal-body{
+  text-align: left;
+}
 </style>

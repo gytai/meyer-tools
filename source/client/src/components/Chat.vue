@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="chat__main__content">
-        test
+        <ChatMessage/>
       </div>
       <div class="chat__main__footer">
         <div class="chat__main__footer__controls">
@@ -21,7 +21,8 @@
           <div class="chat__main__footer__controls__btn-like" title="点赞"></div>
         </div>
         <div class="chat__main__footer__input">
-          <Input class="chat__main__footer__input__textarea" type="textarea" :autosize="{minRows: 6,maxRows:10000}" placeholder="Enter something..."/>
+          <Input class="chat__main__footer__input__textarea" type="textarea" v-model="sendMsgContent"
+                 :autosize="{minRows: 6,maxRows:10000}" placeholder="按 Ctrl + Enter 发送"/>
         </div>
       </div>
     </div>
@@ -31,10 +32,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import ChatUser from '@/components/ChatUser.vue'
+import ChatMessage from '@/components/ChatMessage.vue'
 
 @Component({
   components: {
-    ChatUser
+    ChatUser,
+    ChatMessage
   },
 })
 
@@ -63,6 +66,15 @@ export default class Chat extends Vue {
   private userInfo = {
     name: '张三',
     avatar: 'https://image.chinameyer.com/avatar/male.png'
+  }
+
+  private sendMsgContent = '';
+
+  onKeyup (e) {
+    if (e.ctrlKey && e.keyCode === 13 && this.sendMsgContent.length) {
+      this.sendMessage(this.content);
+      this.content = '';
+    }
   }
 }
 </script>

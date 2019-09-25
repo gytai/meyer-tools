@@ -39,6 +39,7 @@
                 password: this.password
             }).then( res => {
                 Cookies.set('x-access-token',res.token);
+                Cookies.set('account',this.account);
                 this.$router.push({ path: '/fileCloud' })
             }).catch( err => {
                 console.log(err);

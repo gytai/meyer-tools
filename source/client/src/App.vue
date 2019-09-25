@@ -13,6 +13,7 @@
         <Header v-show="isShow">
           <div class="header-user">
             <Avatar icon="ios-person"/>
+            <span class="header-user-account">{{ account }}</span>
           </div>
         </Header>
         <Content > <router-view/></Content>
@@ -33,7 +34,8 @@
     private isTodoActive = false;
     private isUserActive = false;
     private isFileActive = false;
-    private isShow = Cookies.get('x-access-token')?true:false;
+    private isShow = false;
+    private account = '';
 
     toChat(){
       this.isMsgActive = true;
@@ -54,6 +56,7 @@
     updated(){
       console.log('App updated');
       this.isShow = Cookies.get('x-access-token')?true:false;
+      this.account = Cookies.get('account');
     }
   }
 </script>
@@ -67,6 +70,10 @@ html,body,#app {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+ul {
+  list-style: none;
 }
 
 #app{
@@ -101,6 +108,10 @@ html,body,#app {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+
+  &-account{
+    margin-left: 10px;
+  }
 }
 
 .slide-menu{

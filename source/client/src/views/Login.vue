@@ -40,6 +40,8 @@
             }).then( res => {
                 Cookies.set('x-access-token',res.token);
                 Cookies.set('account',this.account);
+                Cookies.set('avatar','http://lorempixel.com/100/100/');
+                Cookies.set('name',res.name);
                 this.$router.push({ path: '/fileCloud' })
             }).catch( err => {
                 console.log(err);

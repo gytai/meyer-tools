@@ -4,7 +4,7 @@
             <span>{{ item.date }}</span>
         </p>
         <div class="main" :class="{ self: item.self }">
-            <img class="avatar" width="30" height="30" :src="item.img" />
+            <img class="avatar" width="30" height="30" :src="item.avatar" />
             <div class="text">{{ item.content }}</div>
         </div>
     </div>

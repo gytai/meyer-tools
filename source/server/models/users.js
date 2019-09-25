@@ -19,6 +19,10 @@ const Model = sequelizeInstance.define(
             type: Sequelize.STRING(50),
             comment: "账户"
         },
+        name: {
+            type: Sequelize.STRING(50),
+            comment: "名字"
+        },
         password: {
             type: Sequelize.STRING(100),
             comment: "密码"
@@ -62,7 +66,7 @@ function findByAccountAndPassword(account, password) {
     password = md5.update(password).digest('hex');
 
     return Model.findOne({
-        attributes: ['id','avatar','status'],
+        attributes: ['id','avatar','status','name'],
         where:{
             account: account,
             password: password

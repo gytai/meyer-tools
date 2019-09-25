@@ -16,8 +16,8 @@
         <div class="file-cloud-container">
             <FilePanel v-for="item,index in fileList" v-bind:key="index" :name="item.name"
                        :img="item.img"
-                       v-on:dblclick.native="handleFileDblClick(item.type,item.id,item.name)"
-                       v-on:click.native="handleFileClick(item.id,item.name,item.is_public,item.is_share,item.preview_path)"
+                       v-on:dblclick.native="handleFileDblClick(item.type,item.id,item.name,item.preview_path)"
+                       v-on:click.native="handleFileClick(item.id,item.type,item.name,item.is_public,item.is_share,item.preview_path)"
             />
         </div>
 
@@ -77,7 +77,7 @@
                 <FormItem label="名称">
                     <Input v-model="fileInfoData.name" placeholder="请输入文件夹或者文件名称"></Input>
                 </FormItem>
-                <FormItem label="分享">
+                <FormItem label="分享" v-show="fileInfoData.type == 2">
                     <i-switch v-model="fileInfoData.is_share" size="large">
                         <span slot="1">开启</span>
                         <span slot="0">关闭</span>
@@ -124,7 +124,8 @@
         private drawerInfoShow = false;
         private modalDelete = false;
         private deleteFileId = -1;
-        private host = 'http://localhost';
+        private clickTimeId = 0;
+        private host = 'http://localhost:8081';
         private uploadHeaders = {
             'x-access-token': Cookies.get('x-access-token')
         };
@@ -150,6 +151,7 @@
             id: 0,
             pid: 0,
             name: '',
+            type: 1,
             is_public: '0',
             preview_path:'',
             is_share: false
@@ -233,7 +235,8 @@
             }
         }
 
-        handleFileDblClick(type,id,name){
+        handleFileDblClick(type,id,name,preview_path){
+            clearTimeout(this.clickTimeId);
             if(type == 1){
                 this.currentFileId = id;
                 this.listFile(this.currentFileId);
@@ -242,18 +245,23 @@
                     name: name,
                     id: id
                 });
+            }else{
+                window.open(preview_path)
             }
         }
 
-        handleFileClick(id,name,is_public,is_share,preview_path){
-            this.fileInfoData.id = id;
-            this.fileInfoData.name = name;
-            this.fileInfoData.is_public = is_public + '';
-            this.fileInfoData.is_share = is_share == 1?true:false;
-            this.fileInfoData.preview_path = preview_path;
-            this.drawerInfoShow = true;
-
-            console.log('this.fileInfoData',this.fileInfoData)
+        handleFileClick(id,type,name,is_public,is_share,preview_path){
+            clearTimeout(this.clickTimeId);
+            // 加定时器防止单击事件和双击事件有冲突
+            this.clickTimeId = setTimeout(() =>  {
+                this.fileInfoData.id = id;
+                this.fileInfoData.name = name;
+                this.fileInfoData.type = type;
+                this.fileInfoData.is_public = is_public + '';
+                this.fileInfoData.is_share = is_share == 1?true:false;
+                this.fileInfoData.preview_path = preview_path;
+                this.drawerInfoShow = true;
+            }, 250);
         }
 
         handleBreadcrumbClick(index,id){

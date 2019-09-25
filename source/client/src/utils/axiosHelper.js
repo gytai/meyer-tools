@@ -6,12 +6,10 @@
 
 import axios from "axios";
 import qs from "qs";
-import config from '../config';
 import { Message } from 'iview'
 import Cookies from 'js-cookie'
 
 const service = axios.create({
-    baseURL: config.BASE_URL,  // api的base_url
     timeout: 5000,  // 请求超时时间
 });
 

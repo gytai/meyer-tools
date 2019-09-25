@@ -39,6 +39,7 @@ var httpsIo = socketIo(httpsServer,{secure: true});
 ioSvc.ioServer(httpsIo);
 
 httpIo.use((socket, next) => {
+  console.log('socket connect');
   let token = socket.handshake.query.token;
   if ('meyer-tools-token' == token) {
     return next();
@@ -47,6 +48,7 @@ httpIo.use((socket, next) => {
 });
 
 httpsIo.use((socket, next) => {
+  console.log('socket connect');
   let token = socket.handshake.query.token;
   if ('meyer-tools-token' == token) {
     return next();

@@ -1,16 +1,12 @@
 <template>
-    <div class="message" v-scroll-bottom="messages">
-        <ul v-if="messages">
-            <li v-for="item in messages">
-                <p class="time">
-                    <span>{{ item.date | time }}</span>
-                </p>
-                <div class="main" :class="{ self: item.self }">
-                    <img class="avatar" width="30" height="30" :src="item.self ? user.img : '11111'" />
-                    <div class="text">{{ item.content }}</div>
-                </div>
-            </li>
-        </ul>
+    <div class="message">
+        <p class="time">
+            <span>{{ item.date }}</span>
+        </p>
+        <div class="main" :class="{ self: item.self }">
+            <img class="avatar" width="30" height="30" :src="item.img" />
+            <div class="text">{{ item.content }}</div>
+        </div>
     </div>
 </template>
 
@@ -19,18 +15,16 @@
 
     @Component
     export default class ChatMessage extends Vue {
-        private user = {img:'1111'}
-
         @Prop()
-        private messages = [{date:"2019-06-30",content:'111111',self:false},{date:"",content:'222222222222222222222222222222222',self:true}];
-    };
+        private item : Object;
+    }
 </script>
 
 
 <style lang="less" scoped>
     .message {
         padding: 10px 15px;
-        overflow-y: scroll;
+        overflow-y:auto;
         li {
             margin-bottom: 15px;
         }
@@ -45,6 +39,9 @@
                 border-radius: 2px;
                 background-color: #dcdcdc;
             }
+        }
+        .main{
+            text-align: left;
         }
         .avatar {
             float: left;

@@ -28,7 +28,7 @@ client.on('connect', function(){
  * @params expire (过期时间,单位秒;可为空，为空表示不过期)
  */
 redisSvc.set = function(key, value, expire){
-    key = appName + appName;
+    key = appName + key;
     return new Promise(function (resolve, reject) {
         if(typeof value == 'undefined') {
             return reject(key + '的值为空')
@@ -51,7 +51,7 @@ redisSvc.set = function(key, value, expire){
  * @param key 键
  */
 redisSvc.get = function(key){
-    key = appName + appName;
+    key = appName + key;
     return new Promise(function (resolve, reject) {
         client.get(key, function(err,result){
             if (err) {
@@ -68,7 +68,7 @@ redisSvc.get = function(key){
  * @param key 键
 */
 redisSvc.del = function(key){
-    key = appName + appName;
+    key = appName + key;
     return new Promise(function (resolve, reject) {
         client.del(key, function(err,result){
             if (err) {

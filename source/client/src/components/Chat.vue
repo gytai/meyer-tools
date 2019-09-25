@@ -1,18 +1,19 @@
 <template>
   <div class="chat">
     <div class="chat__slide">
-      <ChatUser v-for="item in userlist" :imgUrl="item.avatar"
-                :msgCount="item.msgCount" :nickName="item.nickName" v-bind:key="item.id"/>
+      <ChatUser v-for="item,index in userlist" :imgUrl="item.avatar"
+                :msgCount="item.msgCount" :nickName="item.name" v-bind:key="index"
+                @click.native="handleUserClick(item.account,item.name,item.avatar)"/>
     </div>
     <div class="chat__main">
       <div class="chat__main__header">
         <div class="chat__main__header__info">
-          <div class="chat__main__header__info__avatar"> <img :src="userInfo.avatar"/> </div>
-          <div class="chat__main__header__info__name"> {{userInfo.name }} </div>
+          <div class="chat__main__header__info__avatar"> <img :src="sessionUserInfo.avatar"/> </div>
+          <div class="chat__main__header__info__name"> {{sessionUserInfo.name }} </div>
         </div>
       </div>
-      <div class="chat__main__content">
-        <ChatMessage/>
+      <div class="chat__main__content" id="msgContent">
+        <ChatMessage v-for="item,index in messageList" v-bind:key="index" :item="item"/>
       </div>
       <div class="chat__main__footer">
         <div class="chat__main__footer__controls">
@@ -22,7 +23,7 @@
         </div>
         <div class="chat__main__footer__input">
           <Input class="chat__main__footer__input__textarea" type="textarea" v-model="sendMsgContent"
-                 :autosize="{minRows: 6,maxRows:10000}" placeholder="按 Ctrl + Enter 发送"/>
+                 :autosize="{minRows: 6,maxRows:10000}" placeholder="按 Ctrl + Enter 发送"  @keyup.native.ctrl.enter="onKeyup" />
         </div>
       </div>
     </div>
@@ -30,11 +31,37 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component,Watch, Vue } from 'vue-property-decorator';
 import ChatUser from '@/components/ChatUser.vue'
 import ChatMessage from '@/components/ChatMessage.vue'
+import moment from 'moment'
 
 @Component({
+  sockets: {
+    connect(){
+      console.log('socket session connect');
+      this.socketLogin();
+    },
+    disconnect(){
+      console.log('socket session disconnect');
+    },
+    userOnline(data){
+      this.$Message.success(data.name + ' 上线');
+    },
+    userList(data){
+      this.userlist = data;
+    },
+    roomMessage(data){
+      if(data.from != this.userInfo.account){
+        let info = {
+          'date' : moment().format('YYYY-MM-DD HH:mm:ss'),
+          'content': data.data,
+          'self': false
+        };
+        this.messageList.push(info);
+      }
+    }
+  },
   components: {
     ChatUser,
     ChatMessage
@@ -42,39 +69,75 @@ import ChatMessage from '@/components/ChatMessage.vue'
 })
 
 export default class Chat extends Vue {
-  private userlist = [
-    {
-      id:1,
-      avatar:'https://image.chinameyer.com/avatar/male.png',
-      msgCount:23,
-      nickName:'李四'
-    },
-    {
-      id:2,
-      avatar:'https://image.chinameyer.com/avatar/male.png',
-      msgCount:24,
-      nickName:'李四2'
-    },
-    {
-      id:3,
-      avatar:'https://image.chinameyer.com/avatar/male.png',
-      msgCount:25,
-      nickName:'李四3'
-    }
-  ];
+  private userlist = [];
+  private messageList = [];
 
   private userInfo = {
-    name: '张三',
-    avatar: 'https://image.chinameyer.com/avatar/male.png'
-  }
+    name:  new Date().getTime(),
+    avatar: 'https://image.chinameyer.com/avatar/male.png',
+    account: new Date().getTime()
+  };
+
+  private sessionUserInfo = {
+    name: '即时群聊',
+    avatar: '',
+    account:'meyer-chat'
+  };
 
   private sendMsgContent = '';
 
-  onKeyup (e) {
-    if (e.ctrlKey && e.keyCode === 13 && this.sendMsgContent.length) {
-      this.sendMessage(this.content);
-      this.content = '';
-    }
+  onKeyup () {
+    let info = {
+      'date' : moment().format('YYYY-MM-DD HH:mm:ss'),
+      'content': this.sendMsgContent,
+      'self': true
+    };
+    this.messageList.push(info);
+    this.sendMessage(this.sessionUserInfo.account,this.sendMsgContent);
+  }
+
+  @Watch('messageList')
+  handleScroll() {
+    this.scrollMsgContent();
+  }
+
+  scrollMsgContent(){
+    setTimeout(() => {
+      let ele = document.getElementById('msgContent');
+      ele.scrollTop = ele.scrollHeight;
+    },50);
+  }
+
+  handleUserClick(account,name,avatar){
+    //this.sessionUserInfo.account = account;
+    //this.sessionUserInfo.name = name;
+    //this.sessionUserInfo.avatar = avatar;
+  }
+
+  // socket 操作
+  socketLogin(){
+    this.$socket.emit('login', {
+      account:this.userInfo.account,
+      avatar: this.userInfo.avatar,
+      msgCount:0,
+      name: this.userInfo.account,
+    });
+    this.$socket.emit('joinRoom', {
+      from: this.userInfo.account,
+      roomId: 'meyer-chat',
+    });
+  }
+
+  sendMessage(to,content){
+    this.$socket.emit('roomMessage', {
+      from: this.userInfo.account,
+      to: to,
+      data: content
+    })
+  }
+
+  mounted(){
+    this.scrollMsgContent();
   }
 }
 </script>
@@ -85,7 +148,7 @@ export default class Chat extends Vue {
     height: 100%;
     display: flex;
     flex-direction: row;
-    background: #f5f6f7;
+    background-color: #eee;
 
     &__slide{
       width: 200px;
@@ -103,6 +166,11 @@ export default class Chat extends Vue {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+
+      &__content{
+        height: calc(100% - 220px);
+        overflow-y:auto;
+      }
 
       &__header{
         height: 50px;

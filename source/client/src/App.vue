@@ -16,7 +16,7 @@
             <span class="header-user-account">{{ account }}</span>
           </div>
         </Header>
-        <Content > <router-view/></Content>
+        <Content class="app-content"> <router-view/></Content>
         <!--<Footer>Footer</Footer>-->
       </Layout>
     </Layout>
@@ -34,9 +34,8 @@
     private isTodoActive = false;
     private isUserActive = false;
     private isFileActive = false;
-    private isShow = false;
-    private account = '';
-
+    private isShow = Cookies.get('x-access-token')?true:false;
+    private account = Cookies.get('account');
     toChat(){
       this.isMsgActive = true;
       this.isTodoActive = false;
@@ -70,6 +69,8 @@ html,body,#app {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  overflow-x:hidden;
+  overflow-y:hidden;
 }
 
 ul {
@@ -78,6 +79,10 @@ ul {
 
 #app{
   min-width: 360px;
+}
+
+.app-content{
+  overflow-y:hidden;
 }
 
 .ivu-layout{
@@ -111,6 +116,8 @@ ul {
 
   &-account{
     margin-left: 10px;
+    font-weight: bold;
+    font-size: 16px;
   }
 }
 

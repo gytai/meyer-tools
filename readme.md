@@ -11,6 +11,6 @@
 * 20190711立项
 
 ### 
-![登录](/docs/ui/login.jpg)
-![聊天](/docs/ui/chat.jpg)
-![文件管理](/docs/ui/file.jpg)
+![登录](https://github.com/gytai/meyer-tools/tree/master/docs/ui/login.jpg)
+![聊天](https://github.com/gytai/meyer-tools/tree/master/docs/ui/chat.jpg)
+![文件管理](https://github.com/gytai/meyer-tools/tree/master/docs/ui/file.jpg)

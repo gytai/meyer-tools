@@ -27,7 +27,6 @@
   import {Component, Vue } from 'vue-property-decorator';
   import Cookies from 'js-cookie'
 
-  @Component
   export default class App extends Vue {
 
     private isMsgActive = true;
@@ -54,10 +53,18 @@
     }
 
     toTodo(){
+      this.isMsgActive = false;
+      this.isTodoActive = true;
+      this.isUserActive = false;
+      this.isFileActive = false;
       this.$Message.success('敬请期待');
     }
 
     toUser(){
+      this.isMsgActive = false;
+      this.isTodoActive = false;
+      this.isUserActive = true;
+      this.isFileActive = false;
       this.$Message.success('敬请期待');
     }
 

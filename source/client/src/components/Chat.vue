@@ -37,33 +37,15 @@
     import ChatMessage from '@/components/ChatMessage.vue'
     import moment from 'moment'
     import Cookies from 'js-cookie'
+    import io from 'socket.io-client';
+
+    const socket = io('http://localhost:3008', {
+        query: {
+            token: 'meyer-tools-token'
+        }
+    });
 
     @Component({
-        sockets: {
-            connect() {
-                console.log('socket session connect');
-            },
-            disconnect() {
-                console.log('socket session disconnect');
-            },
-            userOnline(data) {
-                this.$Message.success(data.name + ' 上线');
-            },
-            userList(data) {
-                this.userlist = data;
-            },
-            roomMessage(data) {
-                if (data.from != this.userInfo.account) {
-                    let info = {
-                        'date': moment().format('YYYY-MM-DD HH:mm:ss'),
-                        'content': data.data,
-                        'self': false,
-                        'avatar': data.avatar
-                    };
-                    this.messageList.push(info);
-                }
-            }
-        },
         components: {
             ChatUser,
             ChatMessage
@@ -87,6 +69,7 @@
         };
 
         private sendMsgContent = '';
+
 
         onKeyup() {
             let info = {
@@ -120,20 +103,20 @@
 
         // socket 操作
         socketLogin() {
-            this.$socket.emit('login', {
+            socket.emit('login', {
                 account: this.userInfo.account,
                 avatar: this.userInfo.avatar,
                 msgCount: 0,
                 name: this.userInfo.account,
             });
-            this.$socket.emit('joinRoom', {
+            socket.emit('joinRoom', {
                 from: this.userInfo.account,
                 roomId: 'meyer-chat',
             });
         }
 
         sendMessage(to, content) {
-            this.$socket.emit('roomMessage', {
+            socket.emit('roomMessage', {
                 from: this.userInfo.account,
                 to: to,
                 data: content,
@@ -144,6 +127,29 @@
         mounted() {
             this.scrollMsgContent();
             this.socketLogin();
+            socket.on('connect', () => {
+                console.log('socket session connect');
+            });
+            socket.on('disconnect', () => {
+                console.log('socket session disconnect');
+            });
+            socket.on('userOnline', (data) => {
+                this.$Message.success(data.name + ' 上线');
+            });
+            socket.on('userList', (data) => {
+                this.userlist = data;
+            });
+            socket.on('roomMessage', (data) => {
+                if (data.from != this.userInfo.account) {
+                    let info = {
+                        'date': moment().format('YYYY-MM-DD HH:mm:ss'),
+                        'content': data.data,
+                        'self': false,
+                        'avatar': data.avatar
+                    };
+                    this.messageList.push(info);
+                }
+            });
         }
     }
 </script>

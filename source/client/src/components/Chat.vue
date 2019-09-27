@@ -42,7 +42,6 @@
         sockets: {
             connect() {
                 console.log('socket session connect');
-                this.socketLogin();
             },
             disconnect() {
                 console.log('socket session disconnect');
@@ -144,6 +143,7 @@
 
         mounted() {
             this.scrollMsgContent();
+            this.socketLogin();
         }
     }
 </script>

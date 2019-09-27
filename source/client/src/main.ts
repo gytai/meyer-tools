@@ -7,14 +7,14 @@ import 'iview/dist/styles/iview.css'
 import Cookies from 'js-cookie'
 import VueSocketIO from 'vue-socket.io'
 import * as config from './config';
-import socketio from 'socket.io-client'
+import socketIo from 'socket.io-client'
 
 Vue.config.productionTip = false
 Vue.use(iView)
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: socketio(config.WS_URL,{
+  connection: socketIo(config.WS_URL,{
       query: {
         token: 'meyer-tools-token'
       }
@@ -35,5 +35,5 @@ router.beforeEach((to, from, next) => {
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app')

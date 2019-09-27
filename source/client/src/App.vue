@@ -4,8 +4,8 @@
       <Sider hide-trigger v-show="isShow">
         <div class="slide-menu">
           <div class="btn-msg" v-bind:class="{ 'btn-msg-active': isMsgActive }" title="聊天" @click="toChat"></div>
-          <div class="btn-todo" v-bind:class="{ 'btn-todo-active': isTodoActive }" title="任务"></div>
-          <div class="btn-user" v-bind:class="{ 'btn-user-active': isUserActive }" title="通讯录"></div>
+          <div class="btn-todo" v-bind:class="{ 'btn-todo-active': isTodoActive }" title="任务" @click="toTodo"></div>
+          <div class="btn-user" v-bind:class="{ 'btn-user-active': isUserActive }" title="通讯录" @click="toUser"></div>
           <div class="btn-file" v-bind:class="{ 'btn-file-active': isFileActive }" title="文件盘" @click="toFileCloud"></div>
         </div>
       </Sider>
@@ -36,6 +36,7 @@
     private isFileActive = false;
     private isShow = Cookies.get('x-access-token')?true:false;
     private account = Cookies.get('account');
+
     toChat(){
       this.isMsgActive = true;
       this.isTodoActive = false;
@@ -52,10 +53,17 @@
       this.$router.push({ path: '/fileCloud' })
     }
 
+    toTodo(){
+      this.$Message.success('敬请期待');
+    }
+
+    toUser(){
+      this.$Message.success('敬请期待');
+    }
+
     updated(){
       console.log('App updated');
       this.isShow = Cookies.get('x-access-token')?true:false;
-      this.account = Cookies.get('account');
     }
   }
 </script>

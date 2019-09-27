@@ -30,8 +30,8 @@
 
     @Component
     export default class Home extends Vue {
-        private account =  'taiguangyin';
-        private password= '123456';
+        private account =  '';
+        private password= '';
 
         handleSubmit () {
             apiLogin({
@@ -42,7 +42,7 @@
                 Cookies.set('account',this.account);
                 Cookies.set('avatar','http://lorempixel.com/100/100/');
                 Cookies.set('name',res.name);
-                this.$router.push({ path: '/fileCloud' })
+                this.$router.push({ path: '/' })
             }).catch( err => {
                 console.log(err);
             })

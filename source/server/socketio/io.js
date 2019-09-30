@@ -86,6 +86,7 @@ function ioServer(io) {
         socket.on('disconnect', function () {
             clientCount = Object.keys(io.eio.clients).length;
             console.log('当前连接数 = ', clientCount);
+            socket.broadcast.emit('userOffline', clientOnlineBuff[socket.id]);
             delete clientOnlineBuff[socket.id];
             socket.broadcast.emit('userList', getUserListJson());
 

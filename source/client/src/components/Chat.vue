@@ -152,6 +152,9 @@
             socket.on('userOnline', (data) => {
                 this.$Message.success(data.name + ' 上线');
             });
+            socket.on('userOffline', (data) => {
+                this.$Message.success(data.name + ' 下线');
+            });
             socket.on('userList', (data) => {
                 if(data instanceof Array){
                     let result = [];

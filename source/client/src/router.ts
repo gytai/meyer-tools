@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import FileCloud from './views/FileCloud.vue'
 import Login from './views/Login.vue'
+import Todo from './views/Todo.vue'
 
 Vue.use(Router)
 
@@ -24,6 +25,11 @@ export default new Router({
       path: '/fileCloud',
       name: 'fileCloud',
       component: FileCloud
+    },
+    {
+      path: '/todo',
+      name: 'todo',
+      component: Todo
     },
     {
       path: '/about',

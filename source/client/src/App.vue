@@ -58,16 +58,16 @@
       this.isTodoActive = true;
       this.isUserActive = false;
       this.isFileActive = false;
-      this.$Message.success('敬请期待');
+      this.$router.push({ path: '/todo' })
     }
 
-    toUser(){
-      this.isMsgActive = false;
-      this.isTodoActive = false;
-      this.isUserActive = true;
-      this.isFileActive = false;
-      this.$Message.success('敬请期待');
-    }
+    // toUser(){
+    //   this.isMsgActive = false;
+    //   this.isTodoActive = false;
+    //   this.isUserActive = true;
+    //   this.isFileActive = false;
+    //   this.$Message.success('敬请期待');
+    // }
 
     updated(){
       console.log('App updated');

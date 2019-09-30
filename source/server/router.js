@@ -6,11 +6,13 @@
 const apiFileRouter = require('./routes/api/file');
 const usersRouter = require('./routes/api/users');
 const indexRouter = require('./routes/api/index');
+const todoRouter = require('./routes/api/todo');
 
 function setup(app){
     app.use('/api', indexRouter);
     app.use('/api/file', apiFileRouter);
     app.use('/api/users', usersRouter);
+    app.use('/api/todo', todoRouter);
 }
 
 exports.setup = setup;

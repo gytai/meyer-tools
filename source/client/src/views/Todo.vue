@@ -43,7 +43,7 @@
       };
 
       get todoCount(){
-        const result = this.todoList.filter(item => item.is_finished);
+        const result = this.todoList.filter(item => !item.is_finished);
         return result.length;
       }
 

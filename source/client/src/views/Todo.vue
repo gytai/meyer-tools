@@ -126,7 +126,7 @@
 
     &-list{
       width: 100%;
-      height: calc(100% - 100px);
+      height: calc(100% - 75px);
       display: flex;
       flex-direction: column;
       align-items: flex-start;

@@ -140,7 +140,6 @@
         }
 
         mounted() {
-            console.log('packData',packData)
             this.scrollMsgContent();
             this.socketLogin();
             socket.on('connect', () => {

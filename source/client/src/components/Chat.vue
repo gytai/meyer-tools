@@ -24,7 +24,7 @@
                 </div>
                 <div class="chat__main__footer__input">
                     <Input class="chat__main__footer__input__textarea" type="textarea" v-model="sendMsgContent"
-                           :autosize="{minRows: 6,maxRows:6}" placeholder="按 Enter 发送"
+                           :autosize="{minRows: 5,maxRows:5}" placeholder="按 Enter 发送"
                            @keyup.native.enter="onKeyup"/>
                 </div>
             </div>

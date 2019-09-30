@@ -9,7 +9,8 @@
             </Breadcrumb>
 
             <div class="file-cloud-header-opration">
-                <Button class="file-cloud-header-opration-btn" type="primary" icon="ios-add" size="small" @click="drawerShow = true">添加</Button>
+                <Button class="file-cloud-header-opration-btn" type="primary" icon="ios-add"
+                        size="small" @click="drawerShow = true">添加</Button>
             </div>
         </div>
 
@@ -30,7 +31,7 @@
             <Form :model="formData" label-position="left" :label-width=60>
                 <FormItem label="类型">
                     <RadioGroup v-model="formData.type">
-                        <Radio label="1">文件夹   </Radio>
+                        <Radio label="1">文件夹</Radio>
                         <Radio label="2">文件</Radio>
                     </RadioGroup>
                 </FormItem>
@@ -84,21 +85,21 @@
                     </i-switch>
                 </FormItem>
                 <FormItem label="分享链接" v-show="fileInfoData.is_share">
-                    {{ host + fileInfoData.preview_path }}
+                    {{ server_url + fileInfoData.preview_path }}
                 </FormItem>
             </Form>
             <div class="file-cloud-drawer-footer">
                 <Button style="margin-right: 8px" @click="drawerInfoShow = false">取消</Button>
                 <Button style="margin-right: 8px" type="primary"
                         @click="updateFile(fileInfoData.id,fileInfoData.is_public,
-                        fileInfoData.name,fileInfoData.is_share)">更新</Button>
-                <Button type="error" @click="modalDelete = true;deleteFileId = fileInfoData.id">删除</Button>
+                        fileInfoData.name,fileInfoData.is_share,fileInfoData.type)">更新</Button>
+                <Button type="error" @click="modalDelete = true;">删除</Button>
             </div>
         </Drawer>
         <Modal
                 v-model="modalDelete"
                 title="确认删除"
-                @on-ok="deleteFile(deleteFileId)"
+                @on-ok="deleteFile"
                 @on-cancel="cancel">
             <p>您是否确认删除这个文件?</p>
         </Modal>
@@ -110,6 +111,7 @@
     import FilePanel from '@/components/FilePanel.vue'
     import {apiListFile, apiCreatFile, apiUpdateFile, apiDeleteFile} from '@/api/file';
     import Cookies from 'js-cookie'
+    import {HOST_URL} from "@/config";
 
     @Component({
         components: {
@@ -123,9 +125,8 @@
         private drawerShow = false;
         private drawerInfoShow = false;
         private modalDelete = false;
-        private deleteFileId = -1;
         private clickTimeId = 0;
-        private host = 'http://localhost:8081';
+        private server_url = HOST_URL;
         private uploadHeaders = {
             'x-access-token': Cookies.get('x-access-token')
         };
@@ -156,8 +157,6 @@
             preview_path:'',
             is_share: false
         };
-
-
 
         listFile(pid: Number) {
             const params = {
@@ -192,9 +191,10 @@
             })
         }
 
-        deleteFile(id){
+        deleteFile(){
             apiDeleteFile({
-                id: id
+                id: this.fileInfoData.id,
+                type: this.fileInfoData.type
             }).then( () => {
                 this.listFile(this.currentFileId);
                 this.drawerInfoShow = false;
@@ -204,12 +204,13 @@
             })
         }
 
-        updateFile(id,is_public,name,is_share){
+        updateFile(id,is_public,name,is_share,type){
             apiUpdateFile({
                 id: id,
                 is_public: is_public,
                 name: name,
-                is_share: is_share?1:0
+                is_share: is_share?1:0,
+                type: type
             }).then( () => {
                 this.listFile(this.currentFileId);
                 this.drawerInfoShow = false;

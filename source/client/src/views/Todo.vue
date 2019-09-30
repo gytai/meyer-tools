@@ -125,11 +125,12 @@
 
     &-list{
       width: 100%;
-      height: 100%;
+      height: calc(100% - 100px);
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-top: 40px;
+      padding-top: 40px;
+      overflow-y: auto;
 
       &-item{
        cursor: pointer;

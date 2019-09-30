@@ -3,12 +3,9 @@
 *作者：TaiGuangYin
 *时间：2017-09-09
 * *消息格式：{
-*   type:xxxx        ->消息类型 1=请求 2=回复
 *   from:xxxx        ->发送者
 *   to:xxxx          ->接受者
 *   data:xxxx        ->发送的数据
-*   msg:xxxx         ->消息说明
-*   code:xxxx        ->命令编码
 * }
 * */
 

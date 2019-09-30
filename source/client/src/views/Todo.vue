@@ -3,7 +3,7 @@
     <h2 class="todo-count">待办: <span>{{ todoCount }}</span></h2>
     <div class="todo-item">
       <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" class="todo-item-datetime"
-                  @on-change="handleChange" :options="options"></DatePicker>
+                  @on-change="handleChange" :options="options" :editable="false"></DatePicker>
       <Input class="todo-item-input" placeholder="写下你的待办事项" v-model="todoItem.content" @on-enter="handleInput">
         <Icon type="ios-alarm" slot="suffix" v-show="todoItem.end_time"/>
       </Input>
@@ -12,6 +12,7 @@
       <Timeline pending>
         <TimelineItem v-for="item,index in todoList" @click.native="handleItemClick(item.id,index)"
                       class="todo-list-item" v-bind:key="index" v-show=" (showFinished && item.is_finished) || !item.is_finished">
+          <Icon type="ios-trophy" slot="dot" v-if="item.is_finished"></Icon>
           <span>{{ item.content}}</span>  <span class="todo-list-item-datetime" v-if="item.end_time"> <Time :time="item.end_time" :interval="1"/></span>
         </TimelineItem>
         <TimelineItem class="todo-list-item" @click.native="showFinished = !showFinished">显示已完成事项</TimelineItem>

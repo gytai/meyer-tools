@@ -161,6 +161,7 @@
                     data.forEach(function (d) {
                         if(keys.indexOf(d.account) == -1){
                             result.push(d);
+                            keys.push(d.account);
                         }
                     })
                     this.userlist = result;

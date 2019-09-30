@@ -15,11 +15,12 @@
             <div class="chat__main__content" id="msgContent">
                 <ChatMessage v-for="item,index in messageList" v-bind:key="index" :item="item"/>
             </div>
+            <VEmojiPicker class="chat__main__emojiPanel" :pack="emojiPackData" @select="selectEmoji" v-show="showEmoji"/>
             <div class="chat__main__footer">
                 <div class="chat__main__footer__controls">
-                    <div class="chat__main__footer__controls__btn-msg" title="表情"></div>
-                    <div class="chat__main__footer__controls__btn-file" title="文件传输"></div>
-                    <div class="chat__main__footer__controls__btn-like" title="点赞"></div>
+                    <div class="chat__main__footer__controls__btn-msg" title="表情" @click="showEmoji = true;"></div>
+                    <!--<div class="chat__main__footer__controls__btn-file" title="文件传输"></div>-->
+                    <!--<div class="chat__main__footer__controls__btn-like" title="点赞"></div>-->
                 </div>
                 <div class="chat__main__footer__input">
                     <Input class="chat__main__footer__input__textarea" type="textarea" v-model="sendMsgContent"
@@ -27,6 +28,7 @@
                            @keyup.native.enter="onKeyup"/>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
@@ -35,11 +37,14 @@
     import {Component, Watch, Vue} from 'vue-property-decorator';
     import ChatUser from '@/components/ChatUser.vue'
     import ChatMessage from '@/components/ChatMessage.vue'
+    import VEmojiPicker from 'v-emoji-picker';
+    import packData from 'v-emoji-picker/data/emojis.js';
     import moment from 'moment'
     import Cookies from 'js-cookie'
     import io from 'socket.io-client';
+    import { WS_URL } from '../config';
 
-    const socket = io('http://localhost:3008', {
+    const socket = io(WS_URL, {
         query: {
             token: 'meyer-tools-token'
         }
@@ -48,7 +53,8 @@
     @Component({
         components: {
             ChatUser,
-            ChatMessage
+            ChatMessage,
+            VEmojiPicker
         },
     })
 
@@ -69,7 +75,7 @@
         };
 
         private sendMsgContent = '';
-
+        private showEmoji = false;
 
         onKeyup() {
             let info = {
@@ -86,6 +92,10 @@
         @Watch('messageList')
         handleScroll() {
             this.scrollMsgContent();
+        }
+
+        get emojiPackData () {
+            return packData;
         }
 
         scrollMsgContent() {
@@ -124,7 +134,13 @@
             })
         }
 
+        selectEmoji(emoji) {
+            this.sendMsgContent = this.sendMsgContent + emoji.emoji;
+            this.showEmoji = false;
+        }
+
         mounted() {
+            console.log('packData',packData)
             this.scrollMsgContent();
             this.socketLogin();
             socket.on('connect', () => {
@@ -137,7 +153,16 @@
                 this.$Message.success(data.name + ' 上线');
             });
             socket.on('userList', (data) => {
-                this.userlist = data;
+                if(data instanceof Array){
+                    let result = [];
+                    let keys = [];
+                    data.forEach(function (d) {
+                        if(keys.indexOf(d.account) == -1){
+                            result.push(d);
+                        }
+                    })
+                    this.userlist = result;
+                }
             });
             socket.on('roomMessage', (data) => {
                 if (data.from != this.userInfo.account) {
@@ -184,6 +209,12 @@
                 overflow-y: auto;
             }
 
+            &__emojiPanel{
+                position: fixed;
+                left: 265px;
+                bottom: 160px;
+            }
+
             &__header {
                 height: 50px;
                 border-bottom: solid 1px #e4e4e4;
@@ -218,6 +249,7 @@
 
             &__footer {
                 min-height: 160px;
+                max-height: 160px;
                 border-top: solid 1px #e4e4e4;
 
                 &__controls {

@@ -27,6 +27,7 @@
   import {Component, Vue } from 'vue-property-decorator';
   import Cookies from 'js-cookie'
 
+  @Component
   export default class App extends Vue {
 
     private isMsgActive = true;

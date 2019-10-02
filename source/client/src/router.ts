@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import FileCloud from './views/FileCloud.vue'
 import Login from './views/Login.vue'
 import Todo from './views/Todo.vue'
+import Note from './views/Note.vue'
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ export default new Router({
       path: '/todo',
       name: 'todo',
       component: Todo
+    },
+    {
+      path: '/note',
+      name: 'note',
+      component: Note
     },
     {
       path: '/about',

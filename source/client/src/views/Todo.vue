@@ -27,7 +27,7 @@
   import moment from 'moment';
 
   @Component
-  export default class Home extends Vue {
+  export default class Todo extends Vue {
       private showFinished = false;
       private todoList = [];
 

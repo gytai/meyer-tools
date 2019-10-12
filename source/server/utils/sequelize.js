@@ -28,10 +28,10 @@ const sequelizeInstance = new Sequelize(DB.database, DB.username, DB.password, {
 sequelizeInstance
     .authenticate()
     .then(() => {
-        console.log('数据库连接成功.');
+        console.log('Mysql数据库连接成功.');
     })
     .catch(err => {
-        console.error('数据库连接失败:', err);
+        console.error('Mysql数据库连接失败:', err);
     });
 
 

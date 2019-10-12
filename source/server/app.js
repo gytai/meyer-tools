@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
     let token = req.headers['x-access-token'];
     jwt.verify(token, config.JWT.secret, function (err, decoded) {
         if (err) {
-            console.log(err);
+            console.error(err);
             return res.send({code: 505, msg: '请先登录'});
         }
 

@@ -9,6 +9,10 @@ const DB = {
     dialect:"mysql"
 };
 
+const MONGODB = {
+    url: 'mongodb://localhost/meyerTools'
+};
+
 // Redis配置信息
 const REDIS = {
     port: 6379,
@@ -24,3 +28,4 @@ const JWT = {
 exports.DB = DB;
 exports.REDIS = REDIS;
 exports.JWT = JWT;
+exports.MONGODB = MONGODB;
